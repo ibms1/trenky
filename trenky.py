@@ -4,10 +4,8 @@ import os
 
 try:
     with sync_playwright() as p:
-        # تثبيت المتصفح إذا لم يكن موجوداً
         os.system("playwright install chromium")
         
-        # تكوين المتصفح مع الإعدادات المناسبة
         browser = p.chromium.launch(
             headless=True,
             args=[
@@ -19,19 +17,17 @@ try:
         )
         
         page = browser.new_page()
-        # إضافة User-Agent
         page.set_extra_http_headers({
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         })
         
-        # فتح الصفحة مع timeout
         page.goto('https://trends.google.com/trending?geo=US&status=active&hours=168', 
                  timeout=60000)
         
-        # استخراج البيانات
-        data = page.locator('div.xrnccd div div div:nth-child(2) a h3').all_texts()
+        # Changed from all_texts() to all_inner_texts()
+        data = page.locator('div.xrnccd div div div:nth-child(2) a h3').all_inner_texts()
         browser.close()
-       # Display data
+        
         st.title("Trending Topics on Google")
         if data:
             for index, item in enumerate(data, 1):
