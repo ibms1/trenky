@@ -21,11 +21,19 @@ try:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         })
         
-        page.goto('https://trends.google.com/trending?geo=US&status=active&hours=168', 
-                 timeout=60000)
+        # Go to Google Trends
+        url = 'https://trends.google.com/trends/trendingsearches/daily?geo=US'
+        st.write(f"Accessing URL: {url}")
+        page.goto(url, timeout=60000)
         
-        # Changed from all_texts() to all_inner_texts()
-        data = page.locator('div.xrnccd div div div:nth-child(2) a h3').all_inner_texts()
+        # Wait for content to load
+        page.wait_for_selector('.feed-item-header')
+        
+        # Try different selector
+        data = page.locator('.feed-item-header').all_inner_texts()
+        
+        # Take screenshot for debugging
+        page.screenshot(path="debug.png")
         browser.close()
         
         st.title("Trending Topics on Google")
@@ -34,6 +42,10 @@ try:
                 st.write(f"{index}. {item}")
         else:
             st.warning("No data found")
+            st.write("Please check if:")
+            st.write("1. The website structure has changed")
+            st.write("2. Access is being blocked")
+            st.write("3. The page is loading properly")
             
 except Exception as e:
     st.error(f"An error occurred: {str(e)}")
